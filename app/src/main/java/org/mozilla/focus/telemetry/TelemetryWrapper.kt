@@ -376,6 +376,11 @@ object TelemetryWrapper {
         const val OK = "ok"
         const val CANCEL = "cancel"
         const val TRY_AGAIN = "try_again"
+        const val AWESOMEBAR_TYPE_USER_INPUT = "user_input"
+        const val AWESOMEBAR_TYPE_HISTORY = "history"
+        const val AWESOMEBAR_TYPE_BOOKMARK = "bookmark"
+        const val AWESOMEBAR_TYPE_TABTRAY = "tabtray"
+        const val AWESOMEBAR_TYPE_CLIPBOARD = "clipboard"
     }
 
     enum class FIND_IN_PAGE {
@@ -1406,9 +1411,14 @@ object TelemetryWrapper {
     }
 
     @JvmStatic
-    fun urlBarEvent(isUrl: Boolean, isSuggestion: Boolean, isInLandscape: Boolean) {
+    fun urlBarEvent(
+        isUrl: Boolean,
+        isSuggestion: Boolean,
+        isInLandscape: Boolean,
+        type: String = Extra_Value.AWESOMEBAR_TYPE_USER_INPUT
+    ) {
         if (isUrl) {
-            TelemetryWrapper.browseEvent(isInLandscape)
+            TelemetryWrapper.browseEvent(isInLandscape, type)
         } else if (isSuggestion) {
             TelemetryWrapper.searchSelectEvent(isInLandscape)
         } else {
@@ -1425,9 +1435,10 @@ object TelemetryWrapper {
             extras = [
                 TelemetryExtra(name = Extra.ORIENTATION, value = "portrait,landscape")
             ])
-    private fun browseEvent(isInLandscape: Boolean) {
+    private fun browseEvent(isInLandscape: Boolean, type: String) {
         EventBuilder(Category.ACTION, Method.OPEN, Object.SEARCH_BAR, Value.LINK)
                 .extra(Extra.ORIENTATION, if (isInLandscape) Extra_Value.LANDSCAPE else Extra_Value.PORTRAIT)
+                .extra(Extra.TYPE, type)
                 .queue()
     }
 
